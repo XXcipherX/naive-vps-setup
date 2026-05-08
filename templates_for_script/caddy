@@ -1,0 +1,43 @@
+{
+	admin off
+	log {
+		level WARN
+	}
+	servers :443 {
+		protocols h1 h2 h3
+	}
+}
+
+:443, $NAIVE_DOMAIN {
+	$NAIVE_TLS_DIRECTIVE
+	route {
+		forward_proxy {
+			basic_auth $NAIVE_USER $NAIVE_PASSWORD
+			hide_ip
+			hide_via
+			probe_resistance $NAIVE_PROBE_DOMAIN
+		}
+		respond 404
+	}
+	header {
+		-Server
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "SAMEORIGIN"
+	}
+	handle_errors {
+		header {
+			-Server
+			X-Content-Type-Options "nosniff"
+			X-Frame-Options "SAMEORIGIN"
+		}
+	}
+}
+
+http://$NAIVE_DOMAIN {
+	redir https://{host}{uri} permanent
+}
+
+:80 {
+	header -Server
+	respond 404
+}

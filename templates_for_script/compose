@@ -1,0 +1,13 @@
+services:
+  naiveproxy:
+    image: $NAIVE_IMAGE
+    container_name: naiveproxy
+    restart: always
+    network_mode: host
+    environment:
+      PATH: /etc/naiveproxy/Caddyfile
+    volumes:
+      - ./caddy/Caddyfile:/etc/naiveproxy/Caddyfile:ro
+      - ./caddy/data:/data
+      - ./caddy/config:/config
+      - ./caddy/logs:/var/log/caddy
